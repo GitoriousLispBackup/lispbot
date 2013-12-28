@@ -1,10 +1,12 @@
 (in-package :lispbot)
 
 (defclass test-bot (bot)
-  ((luser :initform (make-instance 'user :nick "luser") :accessor test-bot-luser)))
+  ((luser :initform (make-instance 'user :nick "luser") :accessor test-bot-luser)
+   (topic :initform "There is no topic" :accessor test-bot-topic)))
 
-(defvar *testbot-commands*
-  '(("/nick" . test-bot-/nick)))
+(defparameter *testbot-commands*
+  '(("/nick" . test-bot-/nick)
+    ("/topic" . test-bot-/topic)))
 
 (defmethod start ((bot test-bot) _ &optional __)
   (declare (ignore _ __))
@@ -44,6 +46,12 @@
   (declare (ignore self channel))
   (values))
 
+(defmethod get-topic ((self test-bot) channel)
+  (test-bot-topic self))
+
+(defmethod set-topic ((self test-bot) channel topic)
+  (setf (test-bot-topic self) topic))
+
 (defun start-test-bot (plugins)
   (start (make-instance 'test-bot :plugins plugins) nil))
 
@@ -52,3 +60,10 @@
 (defun test-bot-/nick (bot nick)
   (format t "changed nick to ~a~%" nick)
   (setf (nick (test-bot-luser bot)) nick))
+
+(defun test-bot-/topic (bot &optional topic)
+  (if topic
+      (progn
+        (set-topic bot "" topic)
+        (format t "Topic changed to ~a~%" topic))
+      (format t "~a~%" (get-topic bot ""))))

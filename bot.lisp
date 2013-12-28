@@ -108,6 +108,11 @@ If `actionp' is true, use the ctcp action command"))
 (defgeneric leave (bot channel &key message)
   (:documentation "Leave a channel"))
 
+(defgeneric get-topic (bot channel)
+  (:documentation "Return the channel topic"))
+
+(defgeneric set-topic (bot channel topic)
+  (:documentation "Set the channel topic"))
 
 (defgeneric add-plugin (plugin bot)
   (:documentation "add `plugin' to the bot if there isn't already a plugin with the same name.
@@ -487,6 +492,16 @@ new command."
     (when (find channel (channels self) :test #'string=)
       (irc:part (connection self) channel (or message (quit-message self)))
       t)))
+
+(defmethod get-topic ((self bot) channel)
+  (with-bot-lock self
+    (when (find channel (channels self) :test #'string=)
+      (irc:topic (irc:find-channel (connection self) channel)))))
+
+(defmethod set-topic ((self bot) channel topic)
+  (with-bot-lock self
+    (when (find channel (channels self) :test #'string=)
+      (irc:topic- (connection self) channel topic))))
 
 (defmethod handle-event ((plugin plugin) (event event))
   (declare (ignore plugin event))
