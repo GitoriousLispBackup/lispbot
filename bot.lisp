@@ -174,6 +174,9 @@ If `to-user-p' is t, address the user of the last received message directly"))
   "this is bound to the last message to the bot during the execution of commands
 or the `handle-event' methods of plugins")
 
+(defparameter *command-argstring* nil
+  "bound to the argument of a command before splitting")
+
 (defun help-for-commands (plugin)
   "Print the lambda-lists and docstrings of all commands from `plugin'
 To be used in the `help' method."
@@ -334,7 +337,7 @@ new command."
 (defun split-string (string)
   (let ((list (split-sequence:split-sequence-if (string-splitter)
 					   string
-					   :remove-empty-subseqs t)))
+					   :remove-empty-subseqs nil)))
     list))
 
 (defun plugin-allowed-p (blacklist whitelist plugin)
@@ -370,8 +373,10 @@ new command."
           (handle-errors-in-command bot (find-command plugin command) err))))))
 
 (defun call-commands (message command)
-  (let ((*last-message* message)
-        (args (split-string command)))
+  (let* ((*last-message* message)
+         (args-white (split-string command))
+         (args (remove-if #'alexandria:emptyp args-white))
+         (*command-argstring* (format nil "~{~a~^ ~}" (subseq args-white (1+ (position-if-not #'alexandria:emptyp (rest args-white)))))))
     (apply #'run-command-by-name (bot message) (first args) (rest args))))
 
 (defun call-event-handlers (event)

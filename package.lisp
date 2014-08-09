@@ -32,6 +32,7 @@
            :help-for-commands
            :handle-event
            :*last-message*
+           :*command-argstring*
 
            :event
            :message
