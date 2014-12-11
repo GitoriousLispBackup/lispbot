@@ -376,7 +376,8 @@ new command."
   (let* ((*last-message* message)
          (args-white (split-string command))
          (args (remove-if #'alexandria:emptyp args-white))
-         (*command-argstring* (format nil "~{~a~^ ~}" (subseq args-white (1+ (position-if-not #'alexandria:emptyp (rest args-white)))))))
+         (pos (position-if-not #'alexandria:emptyp (rest args-white)))
+         (*command-argstring* (format nil "~{~a~^ ~}" (if pos (subseq args-white (1+ pos)) args-white))))
     (apply #'run-command-by-name (bot message) (first args) (rest args))))
 
 (defun call-event-handlers (event)
