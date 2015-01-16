@@ -24,6 +24,8 @@
            :stop
            :join
            :leave
+           :get-topic
+           :set-topic
 
            :plugin
            :name
