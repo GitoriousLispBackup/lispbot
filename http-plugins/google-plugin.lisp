@@ -11,7 +11,7 @@
 (defparameter *google-url* "http://www.google.com/search")
 
 (defparameter *user-agent*
-  "Mozilla/5.0 (X11; Linux x86_64; rv:31.0) Gecko/20100101 Firefox/31.0 Iceweasel/31.4.0"))
+  "Mozilla/5.0 (X11; Linux x86_64; rv:31.0) Gecko/20100101 Firefox/31.0 Iceweasel/31.4.0")
 
 (defun get-google-matches (search)
   (let* ((html (drakma:http-request *google-url*
